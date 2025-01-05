@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Real-Time Chat Application</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard/chat.css') }}">
+  </head>
+  <body>
+    <div class="full">
+      <div class="container mt-5">
+        <div class="col-md-8 offset-md-2">
+          <!-- Room Form -->
+          <div id="room-form">
+            <h3 class="h3">Enter Chat Room</h3>
+
+            <div id="join-room-section">
+              <div class="join">
+                <input type="text" placeholder="Name" id="name" required />
+                <input type="text" placeholder="Room Name" id="room_code" required />
+                <button type="button" id="join-room" class="btn btn-primary">Join Room</button>
+              </div>
+            </div>
+
+            <div id="create-room-section" class="hidden">
+              <div>
+                <input type="text" placeholder="Username" id="name-create" required />
+              </div>
+              <button type="button" id="create-room" class="btn btn-success">Create Room</button>
+            </div>
+
+            <button type="button" id="toggle-to-create" class="btn btn-link">Create Room</button>
+            <button type="button" id="toggle-to-join" class="btn btn-link hidden">Join Room</button>
+
+            <ul id="error-message" style="color: red;"></ul>
+          </div>
+
+          <!-- Chat Room Layout -->
+          <div id="chat-room" style="display: none;">
+            <h2 id="room-code-display" style="color: #333; font-family: 'Aboreto', cursive;">Room Code</h2>
+            <div class="items">
+              <span class="toggle-submenu"><i class="fa-solid fa-chevron-down"></i></span>
+              <ul class="submenu">
+                <li><i class="fa-solid fa-chart-pie"></i><a href="#">Dashboard</a></li>
+                <li>
+                  <i class="fa-regular fa-comments"></i>
+                  <a href="" class="room-chat">Room Chat</a>    
+                <li><i class="fa-regular fa-user"></i><a href="#">Account Profile</a></li>
+                <li><i class="fa-solid fa-arrow-right-from-bracket"></i><a href="#">Log out</a></li>
+              </ul> 
+            </div>
+
+            <!-- User List -->
+            <div class="user_list" id="user-list-container">
+              <h4>Users in this room:</h4>
+              <div id="user-list"></div>
+              <div id="user-join-popup" class="popup" style="display: none;">User joined!</div>
+              <div id="user-leave-popup" class="popup" style="display: none;">User left!</div>
+            </div>
+            <ul id="messages" class="p-3"></ul>
+            <form id="form">
+              <div class="input-group mb-3">
+                <input
+                  type="text"
+                  id="message_input"
+                  class="form-control"
+                  placeholder="Type a message"
+                  aria-label="Type a message"
+                />
+                <div class="d-flex justify-content-end">
+                  <button class="btn btn-primary" type="submit" id="yah">Send</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+
+    <script>
+      var socket = io();
+      var userName = '';
+      var roomCode = '';
+
+      // Encrypt and Decrypt Functions
+      const SECRET_KEY = 'my_very_strong_secret_key_32_chars!';
+      function encryptMessage(message) {
+        return CryptoJS.AES.encrypt(message, SECRET_KEY).toString();
+      }
+
+      function decryptMessage(encryptedMessage) {
+        const bytes = CryptoJS.AES.decrypt(encryptedMessage, SECRET_KEY);
+        return bytes.toString(CryptoJS.enc.Utf8);
+      }
+
+      // Show chat room UI
+      function showChatRoom() {
+        document.getElementById('room-form').style.display = 'none';
+        document.getElementById('chat-room').style.display = 'block';
+        document.getElementById('room-code-display').textContent = `Room Code: ${roomCode}`;
+      }
+
+      // Update user list
+// Update user list
+function updateUserList(users) {
+  const userList = document.getElementById('user-list');
+  userList.innerHTML = ''; // Clear the list before adding new items
+
+  // Log users to check the structure
+  console.log(users); 
+
+  function getRandomColor() {
+    const r = Math.floor(Math.random() * 256);
+    const g = Math.floor(Math.random() * 256);
+    const b = Math.floor(Math.random() * 256);
+    return `rgb(${r}, ${g}, ${b})`; // Corrected the return value with proper quotes
+  }
+
+  users.forEach((user) => {
+    const userItem = document.createElement('div');
+    userItem.classList.add('user-item');
+    userItem.style.backgroundColor = getRandomColor();
+
+    // Ensure that user name is displayed correctly
+    //const userName = user.name ? user.name : 'Anonymous'; // Add default value if name is missing
+    userItem.innerHTML = `<span>${user}</span>`;  // Use innerHTML to display name
+
+    userList.appendChild(userItem);
+  });
+}
+
+
+    //Funcion for autoscroll
+
+    function scrollToLatestUser() {
+      const userList = document.getElementById('user-list');
+      userList.scrollTop = userList.scrollHeight; // Scroll ke bagian paling bawah
+    }
+    
+    // Fungsi untuk menambahkan user baru dan auto-scroll
+    function addUser(name) {
+      const userList = document.getElementById('user-list');
+      const newUser = document.createElement('div');
+      newUser.textContent = name;
+      newUser.className = 'user-item'; 
+      userList.appendChild(newUser);
+
+      scrollToLatestUser();
+    }
+
+
+      // Function to show popup notifications
+      function showPopup(message, type) {
+        const popup = document.getElementById(type === 'join' ? 'user-join-popup' : 'user-leave-popup');
+        popup.textContent = message;
+        popup.style.display = 'block';
+
+        popup.style.marginBottom = '60px';
+
+        setTimeout(() => {
+          popup.style.display = 'none';
+        }, 4000);
+      }
+
+      socket.on('join_notify', function (data) {
+        showPopup(data.message, 'join');
+      });
+
+      socket.on('leave_notify', function (data) {
+        showPopup(data.message, 'leave');
+      });
+
+      // Join room
+      document.getElementById('join-room').addEventListener('click', function () {
+        userName = document.getElementById('name').value.trim();
+        roomCode = document.getElementById('room_code').value.trim();
+
+        if (userName && roomCode) {
+          socket.emit('join_room', { userName: userName, roomCode: roomCode });
+
+          socket.on('join_berhasil', function (data) {
+            showChatRoom();
+          });
+
+          socket.on('error', function (data) {
+            document.getElementById('error-message').textContent = data.message;
+            alert(data.message);
+          });
+
+        } else {
+          document.getElementById('error-message').textContent = 'Name and Room Code are required.';
+        }
+      });
+
+      // Create room
+      document.getElementById('create-room').addEventListener('click', function () {
+        userName = document.getElementById('name-create').value.trim();
+        const code_name = ['Sirius', 'Canopus', 'Alpha', 'Centauri', 'Arcturus', 'Vega', 'Andromeda', 'Aquarius', 'Aquila', 'Capella', 'Rigel', 'Procyon'];
+        roomCode = code_name[Math.floor(Math.random() * code_name.length)];
+
+        if (userName) {
+          socket.emit('create_room', { userName: userName, roomCode: roomCode });
+          showChatRoom();
+        } else {
+          document.getElementById('error-message').textContent = 'Name is required to create a room.';
+        }
+      });
+
+      socket.on('room_error', function (data) {
+        document.getElementById('error-message').textContent = data.message;
+        alert(data.message);
+      });
+
+      // Send message
+      document.getElementById("form").addEventListener("submit", function (e) {
+        e.preventDefault();
+        var message = document.getElementById("message_input").value.trim();
+
+        if (message) {
+          const encryptedMessage = encryptMessage(message);
+          socket.emit("message", {
+            message: encryptedMessage,
+            socket_id: socket.id,
+            userName: userName,
+            roomCode: roomCode,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          });
+          document.getElementById("message_input").value = '';
+        }
+      });
+
+      // Receive message
+      socket.on("message", function (data) {
+        var item = document.createElement("li");
+        item.classList.add("message");
+        item.classList.add(data.socket_id === socket.id ? "pesan-kirim" : "pesan-terima");
+
+        item.innerHTML = `<b>${data.userName}</b>: <i>${decryptMessage(data.message)}</i><span class="timestamp">${data.time}</span>`;
+        document.getElementById("messages").appendChild(item);
+        document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
+      });
+
+      // Handle user list updates
+      socket.on("update_users", function (data) {
+        updateUserList(data.users);
+      });
+
+      document.getElementById('toggle-to-create').addEventListener('click', function () {
+        document.getElementById('join-room-section').classList.add('hidden');
+        document.getElementById('create-room-section').classList.remove('hidden');
+        document.getElementById('toggle-to-create').classList.add('hidden');
+        document.getElementById('toggle-to-join').classList.remove('hidden');
+      });
+
+      document.getElementById('toggle-to-join').addEventListener('click', function () {
+        document.getElementById('create-room-section').classList.add('hidden');
+        document.getElementById('join-room-section').classList.remove('hidden');
+        document.getElementById('toggle-to-join').classList.add('hidden');
+        document.getElementById('toggle-to-create').classList.remove('hidden');
+      });
+
+      fetch(`/get_messages/${roomCode}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.messages) {
+          data.messages.forEach(msg => {
+            // Render pesan ke dalam UI chat
+            addMessageToChat(msg.user_name, msg.message, msg.timestamp);
+          });
+        }
+      })
+      .catch(error => {
+        console.error("Error loading messages:", error);
+      });
+
+    </script>
+  </body>
+</html>

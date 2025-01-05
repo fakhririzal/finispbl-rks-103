@@ -1,0 +1,304 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  width: 100%;
+  background: linear-gradient(135deg, #d4e6f1, #f9c2c2);
+  position: relative;
+}
+
+#menu {
+  background: #ffffff;
+  width: 300px;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#menu .logo {
+  display: flex;
+  align-items: center;
+  color: #2c3e50;
+  padding: 10px 0 0 15px;
+}
+
+#menu .logo img {
+  width: 70px;
+}
+
+#menu .items {
+  margin-top: 40px;
+}
+
+#menu .items li {
+  list-style: none;
+  padding: 15px 0;
+  transition: 0.3s ease;
+}
+
+#menu .items li:hover {
+  background: #a4d7ff;
+  cursor: pointer;
+}
+
+#menu .items li i {
+  color: rgb(134, 141, 151);
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  font-size: 14px;
+  margin: 0 10px 0 25px;
+}
+
+#menu .items li:hover i,
+#menu .items li:hover a {
+  color: #fff;
+}
+
+#menu .items li a {
+  text-decoration: none;
+  color: rgb(134, 141, 151);
+  font-weight: 300;
+  transition: 0.3s ease;
+}
+
+.open-chat {
+  background-color: transparent; 
+  border: none;  
+}
+
+#interface {
+  width: calc(100% - 300px);
+  margin-left: 300px;
+  position: relative;
+  padding-top: 80px; 
+}
+
+#interface .navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  padding: 15px 30px;
+  border-bottom: 3px solid #3498db; 
+  position: fixed;
+  width: calc(100% - 300px);
+  z-index: 10;
+  top: 0;
+  right: 0;
+}
+
+#interface .navigation .search {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 10px 14px;
+  border: 1px solid #d7dbe6;
+  border-radius: 4px;
+}
+
+#interface .navigation .search i {
+  margin-right: 14px;
+}
+
+#interface .navigation .search input {
+  border: none;
+  outline: none;
+  font-size: 14px;
+}
+
+#interface .navigation .profile {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+#interface .navigation .profile i {
+  margin-right: 20px;
+  font-size: 19px;
+  font-weight: 400;
+}
+
+#interface .navigation .profile img {
+  width: 35px;
+  height: 30px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.n1 {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+#menu-btn {
+  display: none;
+  color: #2b2b2b;
+  font-size: 20px;
+  cursor: pointer;
+  margin-right: 20px;
+}
+
+.i-name {
+  color: #444a53;
+  padding: 40px 30px 0 30px; 
+  font-size: 24px;
+  font-weight: 700;
+  margin-top: 10px; 
+  margin-bottom: 20px;
+}
+
+.container {
+  padding: 40px;
+}
+
+.custom-jumbotron {
+  background: linear-gradient(135deg, #b3e0ff, #99ccff); 
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  margin-bottom: 80px;
+  z-index: 1;
+}
+
+.custom-jumbotron h1 {
+  font-size: 2.5rem;
+}
+
+.custom-jumbotron h3 {
+  font-size: 1.75rem;
+}
+
+.custom-jumbotron h4 {
+  font-size: 1.5rem;
+}
+
+.custom-jumbotron p {
+  font-size: 1.2rem;
+}
+
+@media (max-width: 769px) {
+  #menu {
+    width: 270px;
+    position: fixed;
+    left: -270px;
+    transition: 0.3s ease;
+  }
+
+  #menu.active {
+    left: 0px;
+  }
+
+  #menu-btn {
+    display: initial;
+  }
+
+  #interface {
+    width: 100%;
+    margin-left: 0px;
+    display: inline-block;
+    transition: 0.3s ease;
+  }
+
+  #menu.active~ #interface {
+    width: calc(100% - 270px);
+    margin-left: 270px;
+    transition: 0.3s ease;
+  }
+
+  #interface .navigation {
+    width: 100%;
+  }
+
+  .container {
+    padding: 40px;
+  }
+
+  .custom-jumbotron {
+    padding: 40px;
+    justify-content: flex-start;
+  }
+
+  .custom-jumbotron h1 {
+    font-size: 2.5rem;
+    padding: 16px;
+    margin: 10px 20px 10px;
+  }
+
+  .custom-jumbotron h3 {
+    font-size: 1.75rem;
+    padding: 16px;
+    margin: 10px 20px 10px;
+  }
+
+  .custom-jumbotron h4 {
+    font-size: 1.5rem;
+    padding: 16px;
+    margin: 10px 20px 10px;
+  }
+
+  .custom-jumbotron p {
+    font-size: 1.2rem;
+    padding: 16px;
+    margin: 10px 20px 10px;
+  }
+}
+
+@media (max-width: 769px) {
+  #interface .navigation {
+    padding: 15px 30px;
+  }
+
+  #interface .navigation .search input {
+    width: 150px;
+  }
+
+  .i-name {
+    padding: 30px 15px 0 15px;
+  }
+
+  .container {
+    padding: 40px;
+  }
+
+  .custom-jumbotron {
+    padding: 40px;
+    justify-content: flex-start;
+  }
+
+  .custom-jumbotron h1 {
+    font-size: 2.5rem;
+    padding: 16px;
+    margin: 8px 0;
+  }
+
+  .custom-jumbotron h3 {
+    font-size: 1.75rem;
+    padding: 16px;
+    margin: 8px 0;
+  }
+
+  .custom-jumbotron h4 {
+    font-size: 1.5rem;
+    padding: 16px;
+    margin: 8px 0;
+  }
+
+  .custom-jumbotron p {
+    font-size: 1.2rem;
+    padding: 16px;
+    margin: 8px 0;
+  }
+}

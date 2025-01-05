@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SENTRI</title>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='dashboard/style.css') }}">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+  <section id="menu">
+    <div class="logo">
+      <img id="image2" src="{{ url_for('static', filename='images/sentri3.png') }}" alt="Logo Sentri">
+      <h2>SENTRI</h2>
+    </div>
+    <div class="items">
+      <li><i class="fa-solid fa-house"></i><a href="#">Dashboard</a></li>
+      <li><i class="fa-solid fa-comments"></i><a href="{{ url_for('chat') }}" class="open-chat">Open Chat</a></li>
+      <li><i class="fa-solid fa-user"></i><a href="#">Account Profile</a></li>
+      <li><i class="fa-solid fa-right-from-bracket"></i><a href="#">Log out</a></li>
+    </div>
+  </section>
+  <section id="interface">
+    <div class="navigation">
+      <div class="n1">
+        <div>
+          <i id="menu-btn" class="fa-solid fa-bars"></i>
+        </div>
+        <div class="search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" placeholder="Search">
+        </div>
+      </div>
+      <div class="profile">
+        <i class="far fa-bell"></i>
+        <img src="{{ url_for('static',  filename='images/profil.jpg') }}" alt="">
+      </div>
+    </div>
+    <h3 class="i-name">
+      Dashboard
+    </h3>
+    <div class="container">
+      <div class="custom-jumbotron mt-5">
+          <h1 class="display-4">Welcome!</h1>
+          <h3>On Project Based Learning</h3>
+          <h4>Secure Encryption for Networked Textual Room Interactions</h4>
+      </div>
+    </div>
+  </section>
+  <script>
+    $('#menu-btn').click(function(){
+      $('#menu').toggleClass("active");
+    });
+    $('.room-chat').click(function(event) {
+    event.preventDefault(); 
+    $(this).siblings('.submenu').toggle(); 
+    });
+  </script>
+  <script>
+document.querySelectorAll('.submenu li').forEach(item => {
+    item.addEventListener('click', function() {
+        document.querySelectorAll('.submenu li').forEach(subItem => {
+            subItem.classList.remove('active');
+        });
+        this.classList.add('active');
+        setTimeout(() => {
+            this.classList.remove('active');
+        }, 300); 
+    });
+});
+document.querySelector('.toggle-submenu').addEventListener('click', function() {
+    const submenu = document.querySelector('.submenu');
+    submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+});
+document.querySelectorAll('.submenu li').forEach(item => {
+    item.addEventListener('click', function() {
+        document.querySelectorAll('.submenu li').forEach(subItem => {
+            subItem.classList.remove('active');
+        });
+        this.classList.add('active');
+    });
+});
+  </script>
+</body>
+</html>
